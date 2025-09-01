@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Tic Tac Toe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        table {
+            display: grid;
+            grid-template-columns: repeat(var(--size), 1fr);
+            gap: 2px;
+            width: 90vw;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            margin-top: 10px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        td {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(100px / var(--size));
+            aspect-ratio: 1 / 1;
+            border: 1px solid #ccc;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        td:hover:not(.disabled):not(.game-over) {
+            background: #dfe6f0;
+            border: 2px solid #007BFF;
+        }
+
+        .X {
+            color: #007BFF;
+        }
+
+        .O {
+            color: #FF5722;
+        }
+
+        .disabled,
+        .game-over {
+            pointer-events: none;
+        }
+
+        #message {
+            margin-top: 12px;
+            font-size: 1.2em;
+            text-align: center;
+            color: #222;
+        }
+
+        #controls {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #difficulty-buttons,
+        #board-size-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        #difficulty-buttons button,
+        #board-size-buttons button {
+            background: #d0d4d9;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: #333 !important;
+            color: white !important;
+        }
+
+        .disabled-btn {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #startBtn,
+        #restartBtn {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #007BFF;
+            color: white;
+        }
+
+        #startBtn.hidden,
+        #restartBtn.hidden {
+            display: none;
+        }
+
+        #score {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div id="controls">
+        <div id="difficulty-buttons">
+            <button id="easyBtn">Easy</button>
+            <button id="mediumBtn">Medium</button>
+            <button id="extremeBtn">Extreme</button>
+        </div>
+        <div id="board-size-buttons">
+            <button data-size="3">3x3</button>
+            <button data-size="4">4x4</button>
+            <button data-size="5">5x5</button>
+        </div>
+        <button id="startBtn">Start Game</button>
+        <div id="score">Player: 0 | AI: 0</div>
+    </div>
+    <table id="board"></table>
+    <div id="message"></div>
+    <button id="restartBtn" class="hidden">Restart</button>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const messageElement = document.getElementById('message');
+        const scoreElement = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const easyBtn = document.getElementById('easyBtn');
+        const mediumBtn = document.getElementById('mediumBtn');
+        const extremeBtn = document.getElementById('extremeBtn');
+        const sizeButtons = document.querySelectorAll('#board-size-buttons button');
+
+        let board = [];
+        let boardSize = 3;
+        let gameOver = true;
+        let playerTurn = true;
+        let playerScore = 0;
+        let aiScore = 0;
+        let difficulty = '';
+        let PLAYER = 'X';
+        let AI = 'O';
+
+        sizeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                boardSize = parseInt(button.dataset.size);
+                sizeButtons.forEach(b => b.classList.remove('selected'));
+                button.classList.add('selected');
+            });
+        });
+
+        [easyBtn, mediumBtn, extremeBtn].forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficulty = btn.id.replace('Btn', '');
+                [easyBtn, mediumBtn, extremeBtn].forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+            });
+        });
+
+        startBtn.addEventListener('click', () => {
+            const boardSelected = [...sizeButtons].some(btn => btn.classList.contains('selected'));
+            const difficultySelected = [easyBtn, mediumBtn, extremeBtn].some(btn => btn.classList.contains('selected'));
+
+            if (!difficultySelected || !boardSelected) {
+                messageElement.textContent = 'Please select a difficulty and board size!';
+                return;
+            }
+
+            startBtn.classList.add('hidden');
+            disableButtons();
+            startGame();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            restartBtn.classList.add('hidden');
+            startBtn.classList.add('hidden');
+            disableButtons();
+            startGame();
+        });
+
+        function disableButtons() {
+            [easyBtn, mediumBtn, extremeBtn].forEach(btn => btn.classList.add('disabled-btn'));
+            sizeButtons.forEach(btn => btn.classList.add('disabled-btn'));
+        }
+
+        function enableButtons() {
+            [easyBtn, mediumBtn, extremeBtn].forEach(btn => btn.classList.remove('disabled-btn'));
+            sizeButtons.forEach(btn => btn.classList.remove('disabled-btn'));
+        }
+
+        function swapSymbols() {
+            if (Math.random() < 0.5) {
+                PLAYER = 'X'; AI = 'O'; playerTurn = true;
+            } else {
+                PLAYER = 'O'; AI = 'X'; playerTurn = false;
+            }
+        }
+
+        function startGame() {
+            board = Array(boardSize * boardSize).fill('');
+            gameOver = false;
+            boardElement.style.setProperty('--size', boardSize);
+            swapSymbols();
+            messageElement.textContent = `You are '${PLAYER}'`;
+            renderBoard();
+            if (!playerTurn) setTimeout(aiMove, 400);
+        }
+
+        function renderBoard() {
+            boardElement.innerHTML = '';
+            for (let i = 0; i < board.length; i++) {
+                const td = document.createElement('td');
+                td.textContent = board[i];
+                td.className = board[i];
+                if (!board[i] && !gameOver) {
+                    td.addEventListener('click', () => handleMove(i));
+                } else {
+                    td.classList.add('disabled');
+                }
+                boardElement.appendChild(td);
+            }
+        }
+
+        function handleMove(index) {
+            if (board[index] || gameOver || !playerTurn) return;
+            board[index] = PLAYER;
+            playerTurn = false;
+            renderBoard();
+            setTimeout(() => {
+                if (checkWin(PLAYER)) {
+                    playerScore++;
+                    endGame(`${PLAYER} wins!`);
+                } else if (!board.includes('')) {
+                    endGame("It's a draw!");
+                } else {
+                    aiMove();
+                }
+            }, 100);
+        }
+
+        function aiMove() {
+            const empty = board.map((v, i) => v === '' ? i : null).filter(i => i !== null);
+            let move = null;
+
+            if (difficulty === 'easy') {
+                move = empty[Math.floor(Math.random() * empty.length)];
+            } else {
+                move = getBestMove();
+                if (move === null) {
+                    shuffleArray(empty);
+                    move = empty[0];
+                }
+            }
+
+            const thinkingTime = Math.floor(Math.random() * 700) + 300; // 300ms–1000ms
+            messageElement.textContent = "AI is thinking...";
+
+            setTimeout(() => {
+                board[move] = AI;
+                renderBoard();
+                setTimeout(() => {
+                    if (checkWin(AI)) {
+                        aiScore++;
+                        endGame(`${AI} wins!`);
+                    } else if (!board.includes('')) {
+                        endGame("It's a draw!");
+                    } else {
+                        playerTurn = true;
+                        messageElement.textContent = "Your turn!";
+                    }
+                }, 100);
+            }, thinkingTime);
+        }
+
+
+        function getBestMove() {
+            const lines = generateLines(boardSize);
+            const empty = board.map((v, i) => v === '' ? i : null).filter(i => i !== null);
+
+            for (let line of lines) {
+                const cells = line.map(i => board[i]);
+                if (cells.filter(c => c === AI).length === 2 && cells.includes('')) {
+                    return line[cells.indexOf('')];
+                }
+            }
+
+            for (let line of lines) {
+                const cells = line.map(i => board[i]);
+                if (cells.filter(c => c === PLAYER).length === 2 && cells.includes('')) {
+                    return line[cells.indexOf('')];
+                }
+            }
+
+            if (difficulty === 'extreme') {
+                const center = Math.floor(board.length / 2);
+                if (empty.includes(center) && Math.random() < 0.7) return center;
+                const corners = [0, boardSize - 1, board.length - boardSize, board.length - 1];
+                shuffleArray(corners);
+                for (let c of corners) {
+                    if (empty.includes(c)) return c;
+                }
+            }
+
+            return null;
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        }
+
+        function generateLines(size) {
+            const lines = [];
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c <= size - 3; c++) {
+                    lines.push([r * size + c, r * size + c + 1, r * size + c + 2]);
+                    lines.push([c * size + r, (c + 1) * size + r, (c + 2) * size + r]);
+                }
+            }
+
+            for (let r = 0; r <= size - 3; r++) {
+                for (let c = 0; c <= size - 3; c++) {
+                    lines.push([r * size + c, (r + 1) * size + c + 1, (r + 2) * size + c + 2]);
+                }
+            }
+
+            for (let r = 0; r <= size - 3; r++) {
+                for (let c = 2; c < size; c++) {
+                    lines.push([r * size + c, (r + 1) * size + c - 1, (r + 2) * size + c - 2]);
+                }
+            }
+
+            return lines;
+        }
+
+        function checkWin(player) {
+            return generateLines(boardSize).some(line => line.every(i => board[i] === player));
+        }
+
+        function endGame(message) {
+            gameOver = true;
+            messageElement.textContent = message;
+            updateScore();
+            restartBtn.classList.remove('hidden');
+            enableButtons();
+        }
+
+        function updateScore() {
+            scoreElement.textContent = `Player: ${playerScore} | AI: ${aiScore}`;
+        }
+
+        renderBoard();
+    </script>
+</body>
+
+</html>

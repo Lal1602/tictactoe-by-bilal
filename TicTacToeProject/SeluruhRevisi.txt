@@ -1,0 +1,67 @@
+okay, ini revisi pertama setelah aku run di web :
+1. tidak ada tombol play/start ketika baru membuka/menjalankan web
+2. saat kita giliran dan menekan suatu kotak, maka akan muncul X dan harusnya ada jeda antara giliranku dan giliran lawan, tetapi ini malah setelah player memilih kotak, si Lawan langsung menampilkan pilihannya secara instan, tidak ada jeda antara sesudah player dan sebelum lawan
+3. disaat si player menang, tidak ada X terakhir di kotak yang terakhir di pilih, melainkan langsung muncul pesan "X Wins!". harusnya muncul X dulu di kotak pilihan terakhir, lalu ada jeda sebelum muncul pesan X Wins!. Begitu juga berlaku ketika si Lawan Menang.
+4. Beri tombol Restart/RePlay ketika layar menampilkan kondisi X/O wins!
+5. Beri Score kepada player dan Lawan Ketika menang, seperti jika player win maka score player bertambah 1, begitu juga untuk Lawan, namun jika Si Player kalah, maka score tidak akan bertambah, begitu juga untuk lawan.
+
+
+okay, ini revisi kedua setelah aku jalankan hasil revisi pertama :
+1. ketika user menekan Start Game, tombol start game tidak menghilang, sehingga user menjadi tidak tau apakah permainan sudah di mulai atau belum. beri tanda jika permainan sudah dimulai dengan cara animasi sederhana.
+2. tidak ada tombol restart ketika kondisi game Draw. Tambahkan restart yang akan langsung memulai permainan tanpa kembali/menekan tombol Start Game.
+3. jeda untuk lawan sebelum gilirannya harusnya bervariasi, agar terlihat seperti ai yang sedang berpikir untuk langkah dia selanjutnya
+4. harusnya si lawan bisa meng-counter gerakan player agar game tidak mudah dimenangkan oleh player, dan jika si lawan selangkah lagi dia akan menang, namun si player malah blunder, maka si lawan bisa menyelesaikan permainan dengan memenangkannya dengan cara tau pola XOXO untuk menang.
+5. tambahkan difficulty untuk kesulitan bermain, seperti difficult easy yang akan lawan menjadi bodoh(tidak terlalu bodoh), lalu ada difficulty medium(lawan bisa berpikir namun player diberikan kesempatan besar untuk menang), dan yang terakhir yaitu extreme(yang akan membuat player merasa kesulitan dan akan sering draw karena langkah si player terlalu banyak di-counter oleh si lawan. namun masih ada kesempatan kecil untuk player menang). Dan beri tanda jika user sudah memilih/menekan tombol difficulty yang ia pilih.
+
+
+okay, ini revisi ketiga setelah aku jalankan hasil revisi kedua :
+1. tombol start kurang memberi tanda ketika user sudah menekan start game/memulai permainan, karena masih bingung ketika menekan tombolnya itu sudah mulai permainan atau belum, jadikan saja tombolnya menghilang ketika permainan sudah dimulai atau tombol start game ditekan.
+2. sebelum memulai permainan/menekan tombol start, player diharapkan untuk memlih difficulty, namun masalahnya disini adalah ketika permainan sudah dimulai, tombol difficulty masih bisa di pencet sehingga si user menjadi bingung, maka buatlah menjadi interaktif dan jelas dengan cara ketika tombol start di tekan, maka tombol difficulty akan tidak bisa di ganti & tombol start memberikan animasi perlahan menghilang(tampilan menghilang & tidak bisa ditekan).
+3. jika kondisi draw, tidak serta merta langsung memulai pertandingan, tetapi ada pesan draw terlebih dahulu untuk menghentikan permainan, lalu muncul tombol restart.
+4. si player tidak bisa memilih 2 kotak atau lebih secara bersamaan, harus menunggu si lawan giliran dahulu baru si player bisa menekan kotak lain.
+5. kasih tombol restart ketika kondisi X win/O win/Draw dan ketika tombol restart ditekan maka akan langsung memulai ulang pertandingan tanpa harus menekan tombol start game lagi.
+
+
+okay, ini revisi keempat setelah aku jalankan hasil revisi ketiga :
+1. ketika kondisi mengalami memunculkan tombol restart(antara X win/O win/draw), maka tombol untuk dificulty bisa dipilih lagi, lalu setelah memilih difficulty ulang, lalu ketika tombol restart maka tombol difficulty kembali menjadi tidak bisa ditekan/diubah lagi.(seperti saat momen user sebelum start game)
+2. si lawan mempunyai random trick untuk meng-counter langkah player, karena ketika saya(user) mencoba langkah yang sama selama 2 permainan, gerakan lawan juga sama, sama dengan permainan yang tadi. maka buatlah si lawan menjadi tidak mengulangi hal yang sama seakan AI(artificial intelligence) di tictactoe nyata meskipun nyatanya tidak menggunakan ai melainkan arahan javascript. masalahnya di 2 permainan tersebut saya memilih kotak nomor 7, si lawan memilih kotak nomor 1, saya memilih kotak nomor 3, si lawan memilih kotak nomor 5, dll. si lawan melakukan gerakan yang sama, dengan permainan 1 dan 2. itu membuat user menjadi bingung karena si lawan adalah program komputer, bukan ai yang bisa berpikir.
+3. buatlah si player memiliki kesempata 50:50 untuk mendapatkan langkah X atau langkah O, seperti siapa yang bakal melangkah terlebih dahulu(mendapatkan langkah X) seperti dapat X atau O. maka akan berpengaruh untuk langkah Lawan(X atau O)
+4. buatlah tampilan yang sederhana ini menjadi tampilan yang responsif terhadap layar yang lebih kecil(layar tablet atau layar hp) tetapi tetap sederhana.
+
+okay, ini revisi kelima setelah aku jalankan hasil revisi keempat :
+1. ketika kondisi permainan X wins atau O wins, maka akan muncul tombol restart, nah tombol dificulty akan bisa diubah kembali bersamaan dengan munculnya tombol restart, sehinga player bisa memilih ulang difficulty nya tanpa harus kembali menekan tombol start game. alhasil ketika tombol restart ditekan, maka difficulty akan terkunci(tidak bisa diubah lagi) dan permainan akan langsung dimulai seperti biasa tanpa harus kembali ke awal/tanpa menekan tombol start game lagi.
+2. tombol difficulty antara easy, medium, extreme ini tidak sama sehingga menciptakan tidak kerapian dalam tampilan, maka buatlah ketiga tombol ini menjadi rapi(sama panjangnya) sehingga player yang liat menjadi nyaman karena tidak terganggu oleh tidak rapi ini.
+
+okay, ini revisi keenam setelah aku jalankan hasil revisi kelima :
+1. buatlah tampilan ini menjadi unscrollable tapi masih tetap bisa menunjukkan semua tampilan/elemen yang muncul. karena layarnya masih bisa di-scroll atas kanan bawah kiri dan itu sangat mengganggu kenyamanan interaktif user.
+
+okayy good, semua revisi sudah bagus. sekarang waktunya masuk ke desain tampilan permainan :
+1. buatlah seluruh tampilan ini memiliki animasi desain yang unik tapi tetap sederhana sehingga permainan tidak terasa membosankan.
+2. berikan animasi ke seluruh elemen tanpa mengganggu alur logika permainan, agar permainan akan terasa sedikit berwarna(estetik & color pallet yang logis) & fun
+3. jadikan seluruh tampilan menjadi interaktif terhadap users.
+
+okay, ini revisi desain tampilan permainan pertama setelah aku jalankan hasil desain tampilan sebelumnya :
+1. background dan animasi hover kotak sudah ok
+2. sebelum di-hover, tombol difficulty menjadi susah terlihat karena warna tombol dengan warna background utama sama sama abu-abu, otomatis menjadi kurang terlihat. Buatlah menjadi sedikit kontras antara warna tombol dengan warna background agar mudah terlihat dengan menjaga ke-estetikannya.
+3. ketika kotak sedang di-hover, warna abu nya sama dengan warna background utama, sehingga membuat permainan sedikit pusing karena masalah warna yang kurang tepat, berikan border atau ganti warna kotak yang sedang di hover yang cocok dengan warna kesuluruhan(estetik).
+4. ukuran X & O tidak proporsional dengan ukuran Kotaknya, karena kotak terasa kecil namun X & O sangat besar, sehingga menjadi jelek karena ukuran mereka yang tidak cocok. 
+
+okay, ini revisi desain tampilan permainan kedua setelah aku jalankan hasil revisi pertama :
+1. jarak margin top & bottomnya judul terlalu jauh, kurangi sedikit.
+2. jarak margin bottomnya tombol-tombol difficulties terlalu jauh, kurangi sedikit.
+3. jarak margin bottomnya tombol restart terlalu dekat dengan layar hp bagian bawah, tambahkan jarak sedikit.
+4. semua ini dengan tujuan agar ukuran tampilan dan jarak tetap proporsional 
+5. ketika tampilan sedang menampilkan tampilan layar laptop, ukuran kotak dengan X&O masih tidak cocok, seperti kotak yang ukurannya segitu namun ukuran X&O nya lebih besar dari kotaknya yang sehingga memaksakan ukuran kotak menjadi membesar. buatlah menjadi ukuran mereka cocok di tampilan layar lebar(layar laptop) dan tampilan layar yang lebih kecil(layar tablet dan layar hp).
+
+okay, ini revisi desain tampilan permainan ketiga setelah aku jalankan hasil revisi kedua :
+1. jadikan kotak kotak yang telah terisi ini menjadi tidak bisa di hover lagi ketika kondisi permainan menunjukkan kondisi X wins/O Wins/Draw.
+2. perbaiki tampilan layar laptop karena kotak kotak dan XOXO terlalu besar sehingga tombol restartnya tertutup dibawah, perbaikinya tanpa memengaruhi tampilan layar hp & tablet.
+3. buatlah warna XOXO menjadi menarik menggunakan ide ide kreatif, entah itu warnanya, entah itu fontnya, terserah asalkan menarik.
+
+
+okay, ini revisi desain tampilan permainan keempat setelah aku jalankan hasil revisi ketiga :
+1. sistem kemampuan berpikir Ai nya menurun, kembali tingkatkan lagi sesuai kesulitan lawan dan teknik random countering player milik si lawan berdasarkan map nya(3x3, 4x4, 5x5) ala langkahnya yang tidak bisa ditebak oleh player.
+2. terapkan sistem menang nya tetap 3 baris XXX atau OOO seperti biasanya, meskipun map nya 4x4 atau 5x5. Bukan XXXX atau OOOO di map 4x4 dan bukan XXXXX atau OOOOO di map 5x5. tetapi XXX atau OOO di map manapun.
+
+
+TicTacToe By Bilal - Done.

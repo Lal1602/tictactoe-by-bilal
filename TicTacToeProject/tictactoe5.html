@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+      padding: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+      width: 90vw;
+      max-width: 270px;
+      aspect-ratio: 1 / 1;
+    }
+    td {
+      width: 33.33%;
+      height: 33.33%;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 10vw;
+      max-font-size: 80px;
+      cursor: pointer;
+      border: 1px solid black;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      min-height: 1.5em;
+      text-align: center;
+    }
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #score {
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .selected {
+      background-color: #444;
+      color: white;
+    }
+    .hidden {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    @media (max-width: 600px) {
+      td {
+        font-size: 12vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+  <div id="controls">
+    <div>
+      <button id="easyBtn">Easy</button>
+      <button id="mediumBtn">Medium</button>
+      <button id="extremeBtn">Extreme</button>
+    </div>
+    <button id="startBtn">Start Game</button>
+    <div id="score">Player: 0 | AI: 0</div>
+  </div>
+  <table id="board"></table>
+  <div id="message"></div>
+  <button id="restartBtn" class="hidden">Restart</button>
+
+  <script>
+    const boardElement = document.getElementById('board');
+    const messageElement = document.getElementById('message');
+    const scoreElement = document.getElementById('score');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const easyBtn = document.getElementById('easyBtn');
+    const mediumBtn = document.getElementById('mediumBtn');
+    const extremeBtn = document.getElementById('extremeBtn');
+
+    let board = Array(9).fill('');
+    let gameOver = true;
+    let playerTurn = true;
+    let playerScore = 0;
+    let aiScore = 0;
+    let difficulty = '';
+    let PLAYER = 'X';
+    let AI = 'O';
+
+    function swapSymbols() {
+      if (Math.random() < 0.5) {
+        PLAYER = 'X';
+        AI = 'O';
+        playerTurn = true;
+      } else {
+        PLAYER = 'O';
+        AI = 'X';
+        playerTurn = false;
+      }
+    }
+
+    [easyBtn, mediumBtn, extremeBtn].forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!startBtn.classList.contains('hidden')) {
+          difficulty = btn.id.replace('Btn', '');
+          [easyBtn, mediumBtn, extremeBtn].forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        }
+      });
+    });
+
+    startBtn.addEventListener('click', () => {
+      if (!difficulty) {
+        messageElement.textContent = 'Please select a difficulty!';
+        return;
+      }
+      startGame();
+      startBtn.classList.add('hidden');
+      [easyBtn, mediumBtn, extremeBtn].forEach(btn => btn.classList.add('disabled'));
+    });
+
+    restartBtn.addEventListener('click', () => {
+      restartBtn.classList.add('hidden');
+      [easyBtn, mediumBtn, extremeBtn].forEach(btn => btn.classList.remove('disabled'));
+      startBtn.classList.remove('hidden');
+    });
+
+    function startGame() {
+      board = Array(9).fill('');
+      gameOver = false;
+      swapSymbols();
+      messageElement.textContent = `You are '${PLAYER}'`;
+      renderBoard();
+      if (!playerTurn) {
+        setTimeout(aiMove, Math.random() * 500 + 300);
+      }
+    }
+
+    function renderBoard() {
+      boardElement.innerHTML = '';
+      for (let row = 0; row < 3; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < 3; col++) {
+          const index = row * 3 + col;
+          const td = document.createElement('td');
+          td.textContent = board[index];
+          td.addEventListener('click', () => handleMove(index));
+          tr.appendChild(td);
+        }
+        boardElement.appendChild(tr);
+      }
+    }
+
+    function handleMove(index) {
+      if (board[index] || gameOver || !playerTurn) return;
+      board[index] = PLAYER;
+      playerTurn = false;
+      renderBoard();
+      setTimeout(() => {
+        if (checkGameState(PLAYER)) {
+          playerScore++;
+          endGame(`${PLAYER} wins!`);
+        } else if (board.includes('')) {
+          const delay = Math.random() * 800 + 200;
+          setTimeout(aiMove, delay);
+        } else {
+          endGame("It's a draw!");
+        }
+      }, 100);
+    }
+
+    function aiMove() {
+      const empty = board.map((v, i) => v === '' ? i : null).filter(i => i !== null);
+      let move;
+      if (difficulty === 'easy') {
+        move = empty[Math.floor(Math.random() * empty.length)];
+      } else if (difficulty === 'medium') {
+        move = getSmartMove(false) ?? empty[Math.floor(Math.random() * empty.length)];
+      } else {
+        const shuffled = empty.sort(() => 0.5 - Math.random());
+        move = getSmartMove(true) ?? getSmartMove(false) ?? shuffled[0];
+      }
+
+      board[move] = AI;
+      renderBoard();
+      setTimeout(() => {
+        if (checkGameState(AI)) {
+          aiScore++;
+          endGame(`${AI} wins!`);
+        } else if (!board.includes('')) {
+          endGame("It's a draw!");
+        } else {
+          playerTurn = true;
+        }
+      }, 100);
+    }
+
+    function getSmartMove(forWin) {
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+
+      for (let [a,b,c] of wins) {
+        const line = [board[a], board[b], board[c]];
+        const target = forWin ? AI : PLAYER;
+        if (line.filter(cell => cell === target).length === 2 && line.includes('')) {
+          const idx = [a,b,c][line.indexOf('')];
+          return idx;
+        }
+      }
+      return null;
+    }
+
+    function checkGameState(player) {
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return wins.some(([a,b,c]) => board[a] && board[a] === board[b] && board[a] === board[c]);
+    }
+
+    function endGame(message) {
+      gameOver = true;
+      renderBoard();
+      messageElement.textContent = message;
+      updateScore();
+      restartBtn.classList.remove('hidden');
+    }
+
+    function updateScore() {
+      scoreElement.textContent = `Player: ${playerScore} | AI: ${aiScore}`;
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
